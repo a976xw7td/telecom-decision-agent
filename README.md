@@ -2,7 +2,7 @@
 
 挑战③交付物：一个**离线、确定性、可独立打开**的经营决策应用，把 Agent / Skill / RAG / 工作流串成一条可复现的证据链。
 
-- 应用标识：`agent.telecom-ops-decider` **v1.0.0** / build **20261125.2**
+- 应用标识：`agent.telecom-ops-decider` **v1.0.0** / build **20261125.3**
 - 形态：单文件 HTML 界面（`index.html`）+ 本地规则引擎（`engine.js`），双击即可运行，**不联网、不需要安装、不需要账号**
 - 数据窗口：2026-W36 ~ 2026-W40（5 周，教学样例）
 - 验证结论：五类测试真实执行 **20 / 20 PASS**（`evidence/run-log.md`）
@@ -14,7 +14,7 @@
 ### 方式 A：直接打开界面（推荐，验收用）
 
 1. 双击 `index.html`（或用浏览器打开该文件的本地路径）。
-2. 页面左上角显示 `agent.telecom-ops-decider v1.0.0 · build 20261125.2`，即版本标识生效。
+2. 页面左上角显示 `agent.telecom-ops-decider v1.0.0 · build 20261125.3`，即版本标识生效。
 3. 在输入框输入问题 → 点「运行」→ 看到五段式流水线依次点亮，下方输出「结论 / 依据 / 待补证据」。
 
 > 若浏览器拦截脚本读取本地 `engine.js`（部分浏览器的 `file://` 限制），按方式 B 起一个本地静态服务，二者输出完全一致。
@@ -82,7 +82,7 @@ node tools/run-tests.js      # 复跑五类测试，重写 evidence/run-log.json
 
 | 资产 | 名称与版本 | 来源 / 存放 | 说明 |
 | --- | --- | --- | --- |
-| **Agent** | `agent.telecom-ops-decider` v1.0.0（build 20261125.2） | 本仓库 `engine.js`（UMD，浏览器与 Node 双端可用） | 规则引擎主体：指标计算、结构化判断、多轮、What-if、人员调整、证据校验 |
+| **Agent** | `agent.telecom-ops-decider` v1.0.0（build 20261125.3） | 本仓库 `engine.js`（UMD，浏览器与 Node 双端可用） | 规则引擎主体：指标计算、结构化判断、多轮、What-if、人员调整、证据校验 |
 | **Skill ①** 经营周报结构化判断 | `skill.structured-weekly-judgment` v1.0.0 | `skill/SKILL.md` 第 1 节 | 五段流水线：输入校验 → RAG 检索 → 指标计算 → 证据校验 → 结构化输出 |
 | **Skill ②** 多轮澄清 | `skill.slot-clarify` v1.0.0 | `skill/SKILL.md` 第 2 节 | 四槽位（时间窗/对象范围/分析维度/决策目的），缺槽先反问，不硬答 |
 | **Skill ③** What-if 人员加配 | `skill.whatif-staffing` v1.0.0 | `skill/SKILL.md` 第 3 节 | 月挽留 = 6 户/人/日 × 人数 × 22 日；净增需扣带教机会成本 60 户 |
@@ -144,5 +144,6 @@ node tools/run-tests.js      # 复跑五类测试，重写 evidence/run-log.json
 
 | build | 日期 | 变更 |
 | --- | --- | --- |
+| 20261125.3 | 2026-11-25 | 第二次流程复测：build 号提升并在更新记录登记，用于验证「改动→复跑测试→推送→提交」链路可重复执行；引擎判定逻辑、用例与结论均未改动，测试仍 20/20 PASS |
 | 20261125.2 | 2026-11-25 | 文档与版本一致性维护：全仓统一 build 号并补本节更新记录；引擎判定逻辑、用例与结论均未改动，测试仍 20/20 PASS |
 | 20261125.1 | 2026-11-25 | 首版：5 个 Skill + RAG 口径 + 双闸门证据校验，20/20 测试通过 |

@@ -1,6 +1,6 @@
 # 经营决策 Skill 包 v1.0.0
 
-归属 Agent：`agent.telecom-ops-decider` v1.0.0（build 20261125.2）
+归属 Agent：`agent.telecom-ops-decider` v1.0.0（build 20261125.3）
 定位：把「看数 → 判断 → 追问 → 加人/调整 → 证据校验」拆成 5 个可单独验证的 Skill，再由 1 条工作流串起来。
 
 ---
@@ -95,4 +95,4 @@ block  ⇔  任一不满足 → 只输出待补证据清单 + 取证路径
 
 **换数流程**（复用本 Skill 到新一周）：替换 `engine.js` 中 `WEEKS` 数组与 `MIDWEEK` 对象 → `node tools/run-tests.js` 复跑 20 条用例 → 全绿即视为数据接入完成。不改任何判断逻辑。
 
-**版本**：Skill ①–⑤ 与 Agent 同步版本化，本次统一 `v1.0.0 / build 20261125.2`。
+**版本**：Skill ①–⑤ 与 Agent 同步版本化，本次统一 `v1.0.0 / build 20261125.3`。
