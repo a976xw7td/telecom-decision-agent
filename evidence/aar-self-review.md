@@ -1,7 +1,7 @@
 # 自查表 · 独立自评 · AAR
 
 挑战：**【端到端试点】电信经营决策实训·挑战③：可运行 Agent 与证据验证**
-产物：`agent.telecom-ops-decider` v1.0.0 / build 20261125.4
+产物：`agent.telecom-ops-decider` v1.0.0 / build 20261125.3
 自评时间：2026-11-25
 
 ---

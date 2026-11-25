@@ -1,7 +1,7 @@
 # 五类测试运行记录（真实执行）
 
-- Agent：`agent.telecom-ops-decider` v1.0.0（build 20261125.4）
-- 运行时间：2026-11-25T07:22:30.515Z
+- Agent：`agent.telecom-ops-decider` v1.0.0（build 20261125.3）
+- 运行时间：2026-11-25T07:18:42.654Z
 - 运行命令：`node tools/run-tests.js`　Node v24.17.0，离线，外部调用 0 次
 - 通过：20 / 20
 
