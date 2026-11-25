@@ -1,5 +1,5 @@
 /* 电信经营决策 Agent · 本地确定性引擎
- * version 1.0.0 / build 20261125.3
+ * version 1.0.0 / build 20261125.4
  * 纯本地运行：不联网、不调用外部模型、不读取任何凭证。
  */
 (function (root, factory) {
@@ -11,7 +11,7 @@
   var AGENT = {
     id: 'agent.telecom-ops-decider',
     version: '1.0.0',
-    build: '20261125.3',
+    build: '20261125.4',
     kind: 'rule-based-deterministic',
     model: 'none (本地规则引擎；未接入外部大模型 API)'
   };

@@ -2,11 +2,11 @@
   "agent": {
     "id": "agent.telecom-ops-decider",
     "version": "1.0.0",
-    "build": "20261125.3",
+    "build": "20261125.4",
     "kind": "rule-based-deterministic",
     "model": "none (本地规则引擎；未接入外部大模型 API)"
   },
-  "generatedAt": "2026-11-25T07:18:42.654Z",
+  "generatedAt": "2026-11-25T07:22:30.515Z",
   "runtime": {
     "node": "v24.17.0",
     "offline": true,
