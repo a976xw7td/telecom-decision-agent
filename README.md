@@ -144,6 +144,8 @@ node tools/run-tests.js      # 复跑五类测试，重写 evidence/run-log.json
 
 见 [`evidence/ai-usage-log.md`](evidence/ai-usage-log.md)：按真实会话、git 提交与测试输出整理，记录需求拆解、方案取舍、16/20 → 20/20 的失败定位、提交缺 `projectSummary` 的故障，以及哪些内容是 AI 生成、哪些由人判断。该记录明确标注“事后整理”，不补写未发生的轮次。
 
+一手会话摘录见 [`evidence/ai-session-excerpt.md`](evidence/ai-session-excerpt.md)：从真实 CogSeed 会话按时间顺序截取，未改写语义。
+
 ---
 
 ## 附：更新记录
