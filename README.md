@@ -140,6 +140,12 @@ node tools/run-tests.js      # 复跑五类测试，重写 evidence/run-log.json
 
 ---
 
+## 7. AI 协作记录
+
+见 [`evidence/ai-usage-log.md`](evidence/ai-usage-log.md)：按真实会话、git 提交与测试输出整理，记录需求拆解、方案取舍、16/20 → 20/20 的失败定位、提交缺 `projectSummary` 的故障，以及哪些内容是 AI 生成、哪些由人判断。该记录明确标注“事后整理”，不补写未发生的轮次。
+
+---
+
 ## 附：更新记录
 
 | build | 日期 | 变更 |
