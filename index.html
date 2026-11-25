@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>电信经营决策 Agent v1.0.0 · 本地确定性版</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#131c2b; --line:#243449; --ink:#e8eef7; --dim:#93a4bb;
+    --accent:#38bdf8; --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+  header{padding:22px 20px 16px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0f1a2b,#0b1220)}
+  h1{margin:0 0 6px;font-size:19px;letter-spacing:.3px}
+  .meta{color:var(--dim);font-size:12.5px;display:flex;gap:14px;flex-wrap:wrap}
+  .meta b{color:var(--ink);font-weight:600}
+  .wrap{max-width:1080px;margin:0 auto;padding:18px 20px 60px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--dim);padding:8px 13px;
+    border-radius:999px;font-size:13.5px;cursor:pointer}
+  .tab:hover{border-color:#31547a;color:var(--ink)}
+  .tab.on{background:#12324a;border-color:var(--accent);color:#cdf1ff}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px}
+  .card h2{margin:0 0 4px;font-size:16px}
+  .card .sub{color:var(--dim);font-size:13px;margin:0 0 14px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+  label{font-size:13px;color:var(--dim)}
+  select,input[type=text],input[type=number]{background:#0e1626;border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:7px 10px;font-size:13.5px;min-width:90px}
+  input[type=text]{min-width:340px;flex:1}
+  button{background:#12324a;border:1px solid var(--accent);color:#cdf1ff;border-radius:8px;
+    padding:8px 15px;font-size:13.5px;cursor:pointer}
+  button:hover{background:#17405e}
+  button.ghost{background:transparent;border-color:var(--line);color:var(--dim)}
+  .pipeline{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 14px}
+  .step{font-size:12px;color:#9fe7ff;background:#0e2740;border:1px solid #1d4a69;
+    border-radius:6px;padding:3px 9px}
+  .step .n{color:#5b7fa3;margin-right:5px}
+  pre{background:#0a1120;border:1px solid var(--line);border-radius:10px;padding:13px 14px;
+    overflow:auto;font-size:12.8px;line-height:1.6;white-space:pre-wrap;word-break:break-word;margin:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin:0 0 14px}
+  .kpi{background:#0e1626;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi .k{font-size:12px;color:var(--dim)}
+  .kpi .v{font-size:19px;font-weight:600;margin-top:2px}
+  .kpi.warn .v{color:var(--warn)} .kpi.bad .v{color:var(--bad)} .kpi.ok .v{color:var(--ok)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 14px}
+  th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-weight:500;font-size:12.5px}
+  .pill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid}
+  .pill.ok{color:var(--ok);border-color:#2b6b52;background:#0d2b22}
+  .pill.bad{color:var(--bad);border-color:#7a3030;background:#2b1414}
+  .pill.warn{color:var(--warn);border-color:#7a5f22;background:#2b2410}
+  .note{font-size:12.5px;color:var(--dim);border-left:2px solid var(--line);padding-left:11px;margin:12px 0 0}
+  .fail{border-color:#7a3030;background:#1c1218}
+  .fail h2{color:#fca5a5}
+  .hide{display:none}
+  footer{color:#5b6f8a;font-size:12px;text-align:center;padding:26px 20px}
+</style>
+</head>
+<body>
+<header>
+  <h1>电信经营决策 Agent · 本地确定性版</h1>
+  <div class="meta">
+    <span>agent <b id="m-id">—</b></span>
+    <span>version <b id="m-ver">—</b></span>
+    <span>build <b id="m-build">—</b></span>
+    <span>model <b id="m-model">—</b></span>
+    <span>运行方式 <b>离线 · 11 条 RAG 知识源 · 0 次外部调用</b></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+  <div class="note">本页所有结论均由 <code>engine.js</code> 本地规则引擎计算，同一输入永远得到同一输出；不联网、不调用外部模型、不读取任何凭证。教学样例数据不含真实身份与真实金额。</div>
+</div>
+<footer>失败状态覆盖：引擎未加载 · 信息不足 · 证据不足 · 检索无命中 · 输入越界</footer>
+
+<script src="engine.js"></script>
+<script>
+(function(){
+  var E = window.TelEngine;
+  var view = document.getElementById('view');
+  var tabsEl = document.getElementById('tabs');
+  var current = 't1';
+
+  function esc(s){ return String(s).replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+  function kpi(k,v,tone){ return '<div class="kpi '+(tone||'')+'"><div class="k">'+esc(k)+'</div><div class="v">'+esc(v)+'</div></div>'; }
+  function pipeline(list){
+    return '<div class="pipeline">'+list.map(function(s,i){ return '<span class="step"><span class="n">'+(i+1)+'</span>'+esc(s)+'</span>'; }).join('')+'</div>';
+  }
+  function pre(o){ return '<pre>'+esc(typeof o === 'string' ? o : JSON.stringify(o,null,2))+'</pre>'; }
+
+  /* ---------- 引擎未加载：全局失败态 ---------- */
+  function engineMissing(){
+    var t = document.getElementById('m-id'); if(t) t.textContent = '未加载';
+    tabsEl.innerHTML = '';
+    view.innerHTML = '<div class="card fail"><h2>运行失败：引擎未加载</h2>'+
+      '<p class="sub">页面依赖同目录的 <code>engine.js</code>。若你是单独双击打开某个文件，或引擎文件被移动/改名，会出现此提示。</p>'+
+      '<table><tr><th>检查项</th><th>期望</th><th>当前</th></tr>'+
+      '<tr><td>文件位置</td><td>index.html 与 engine.js 在同一目录</td><td>engine.js 未就绪</td></tr>'+
+      '<tr><td>导出对象</td><td>window.TelEngine</td><td>undefined</td></tr></table>'+
+      '<p class="sub" style="margin:0">修复：把两个文件放在一起后重新打开；或运行 <code>node tools/run-tests.js</code> 走命令行复现。</p></div>';
+    return true;
+  }
+
+  var TABS = [
+    { id:'t1', label:'① 首轮经营判断' },
+    { id:'t2', label:'② 多轮追问' },
+    { id:'t3', label:'③ 增员 What-if' },
+    { id:'t4', label:'④ 人员不可用' },
+    { id:'t5', label:'⑤ 证据不足拦截' }
+  ];
+
+  function renderTabs(){
+    tabsEl.innerHTML = TABS.map(function(t){
+      return '<button class="tab'+(t.id===current?' on':'')+'" data-id="'+t.id+'">'+t.label+'</button>';
+    }).join('');
+    Array.prototype.forEach.call(tabsEl.querySelectorAll('.tab'), function(b){
+      b.onclick = function(){ current = b.getAttribute('data-id'); render(); };
+    });
+  }
+
+  /* ---------- ① 首轮结构化判断 ---------- */
+  function viewT1(){
+    var a = E.analyzeWeek();
+    var m = E.metrics();
+    var kpis = [
+      kpi('在网用户（'+m.week+'）', m.total.toLocaleString()),
+      kpi('周净增', m.netAdd >= 0 ? '+'+m.netAdd : m.netAdd, m.netAdd < 0 ? 'bad':'ok'),
+      kpi('净增连续为负', m.netNegativeWeeks + ' 周', m.netNegativeWeeks >= 3 ? 'bad':'warn'),
+      kpi('ARPU', '¥'+m.arpu, 'warn'),
+      kpi('万投比', m.complaintsPer10k + ' 单/万户', m.complaintsPer10k > 3 ? 'bad':'ok'),
+      kpi('5G 渗透率', m.fiveGPenetration + '%', 'ok')
+    ].join('');
+    var facts = a.output.facts.map(function(f){
+      return '<tr><td>'+f.id+'</td><td>'+esc(f.text)+'</td><td>'+esc(f.src)+'</td></tr>';
+    }).join('');
+    var hits = a.retrieval.hits.map(function(h){
+      return '<tr><td>'+esc(h.id)+'</td><td>'+esc(h.section)+'</td><td>'+h.score+'</td><td>'+esc(h.why)+'</td></tr>';
+    }).join('');
+    return '<div class="card"><h2>技能 ① 首轮结构化经营判断</h2>'+
+      '<p class="sub">输入固定为教学样例第 '+m.week+' 周数据；输出必须「结论 → 依据 → 待补证据」，不允许只给结论。</p>'+
+      pipeline(a.pipeline)+
+      '<div class="kv">'+kpis+'</div>'+
+      '<h2 style="font-size:14px;margin:14px 0 8px">事实账本（先取数，后下结论）</h2>'+
+      '<table><tr><th>#</th><th>事实</th><th>来源</th></tr>'+facts+'</table>'+
+      '<h2 style="font-size:14px;margin:14px 0 8px">RAG 检索命中（确定性打分）</h2>'+
+      '<table><tr><th>知识源</th><th>章节</th><th>分</th><th>命中依据</th></tr>'+hits+'</table>'+
+      '<h2 style="font-size:14px;margin:14px 0 8px">结构化输出</h2>'+pre(a.output)+
+      '<p class="note">证据状态：'+esc(a.evidenceStatus.status)+' — '+esc(a.evidenceStatus.reason)+'</p></div>';
+  }
+
+  /* ---------- ② 多轮追问 ---------- */
+  function viewT2(){
+    var mt = E.multiTurn();
+    var t = mt.turns.map(function(x){
+      var cls = x.agent.type === 'clarify' ? 'warn' : (x.agent.type === 'judgment' ? 'ok' : '');
+      return '<tr><td>第 '+x.turn+' 轮</td><td>'+esc(x.input)+'</td><td><span class="pill '+cls+'">'+esc(x.agent.type)+'</span></td><td>'+esc(x.agent.output).replace(/\n/g,'<br>')+'</td></tr>';
+    }).join('');
+    var slots = Object.keys(mt.slots).map(function(k){
+      var filled = mt.finalFilled[k];
+      return '<tr><td>'+esc(mt.slots[k].label)+'</td><td><span class="pill '+(filled?'ok':'bad')+'">'+(filled?'已给':'缺失')+'</span></td><td>'+esc(mt.slots[k].ask)+'</td></tr>';
+    }).join('');
+    return '<div class="card"><h2>技能 ② 多轮追问（槽位不足先反问）</h2>'+
+      '<p class="sub">第 1 轮故意给模糊问题，Agent 不得直接下结论；补齐时间窗/范围/维度/目的后再进入判断。</p>'+
+      '<table><tr><th>轮次</th><th>用户输入</th><th>类型</th><th>Agent 输出</th></tr>'+t+'</table>'+
+      '<h2 style="font-size:14px;margin:14px 0 8px">槽位判定（基于第 2 轮输入）</h2>'+
+      '<table><tr><th>槽位</th><th>状态</th><th>缺失时的追问</th></tr>'+slots+'</table></div>';
+  }
+
+  /* ---------- ③ 增员 What-if ---------- */
+  function viewT3(){
+    return '<div class="card"><h2>技能 ③ 增员假设（What-if + 人员约束）</h2>'+
+      '<p class="sub">只做「可触达挽留户数」的条件性推算；缺单户毛利口径，因此不给 ROI 结论，只给敏感性区间。</p>'+
+      '<div class="row"><label>新增坐席数</label><input type="number" id="n" value="2" min="1" max="10">'+
+      '<button id="go">计算</button><button class="ghost" id="s3">2 人</button><button class="ghost" id="s5">5 人</button></div>'+
+      '<div id="out"></div></div>';
+  }
+  function runT3(n){
+    var out = document.getElementById('out');
+    n = Number(n);
+    if(!(n >= 1 && n <= 10)){ /* 输入越界失败态 */
+      out.innerHTML = '<div class="card fail" style="margin-top:12px"><h2>输入越界：无法计算</h2>'+
+        '<p class="sub">新增坐席数须为 1–10 的整数。当前输入：'+esc(n)+'。</p>'+
+        '<p class="note" style="margin:0">越界时引擎不做任何近似处理，直接拒绝并说明原因。</p></div>';
+      return;
+    }
+    var w = E.whatIfAddStaff(n);
+    var r = w.result;
+    var kpis = kpi('基线月挽留（'+w.input.currentOnDuty+' 人在岗）', r.baselineSavedPerMonth+' 户')+
+               kpi('新人月挽留合计', r.newbieSavedPerMonth+' 户', 'warn')+
+               kpi('带教机会成本', '−'+r.coachingOpportunityCost+' 户', 'warn')+
+               kpi('净增月挽留', (r.netAdditionalSavedPerMonth>=0?'+':'')+r.netAdditionalSavedPerMonth+' 户', r.netAdditionalSavedPerMonth>=0?'ok':'bad')+
+               kpi('产能覆盖提升', r.coverageLiftPct+'%', 'ok');
+    var asm = w.assumptions.map(function(a){
+      return '<tr><td>'+a.id+'</td><td>'+esc(a.text)+'</td><td>'+esc(a.refs.join(', ')||'无')+'</td><td><span class="pill '+(a.verified?'ok':'warn')+'">'+(a.verified?'已核验':'未核验·不可对外')+'</span></td></tr>';
+    }).join('');
+    var sen = r.sensitivity.map(function(s){
+      return '<tr><td>¥'+s.marginPerUser+'/户</td><td>¥'+s.monthlyGrossProfit.toLocaleString()+'</td><td>'+s.paybackMonthsAtCost+' 个月</td></tr>';
+    }).join('');
+    out.innerHTML = '<div class="kv" style="margin-top:12px">'+kpis+'</div>'+
+      '<h2 style="font-size:14px;margin:6px 0 8px">假设台账</h2>'+
+      '<table><tr><th>#</th><th>假设</th><th>依据</th><th>核验</th></tr>'+asm+'</table>'+
+      '<h2 style="font-size:14px;margin:6px 0 8px">敏感性（缺毛利口径下的区间推算，非结论）</h2>'+
+      '<table><tr><th>单户月毛利</th><th>月毛利增量</th><th>按 1.6 万/人/月成本回本月数</th></tr>'+sen+'</table>'+
+      '<h2 style="font-size:14px;margin:6px 0 8px">边界声明</h2><pre>'+esc(w.boundary.join('\n'))+'</pre>';
+  }
+
+  /* ---------- ④ 人员不可用 ---------- */
+  function viewT4(){
+    return '<div class="card"><h2>技能 ④ 人员不可用调整（规则 + 产能重排）</h2>'+
+      '<p class="sub">在岗率、顶班、红线工单三条规则来自 RAG 知识源；调整方案同时说明「产能缺口去哪了」。</p>'+
+      '<div class="row"><label>请假工作日数</label><input type="number" id="d" value="3" min="1" max="30">'+
+      '<button id="go4">生成调整方案</button><button class="ghost" id="d1">1 天</button><button class="ghost" id="d5">5 天</button></div>'+
+      '<div id="out4"></div></div>';
+  }
+  function runT4(d){
+    var out = document.getElementById('out4'); d = Number(d);
+    if(!(d >= 1 && d <= 30)){
+      out.innerHTML = '<div class="card fail" style="margin-top:12px"><h2>输入越界：无法生成调整方案</h2>'+
+        '<p class="sub">请假工作日数须为 1–30 的整数。当前输入：'+esc(d)+'。</p></div>';
+      return;
+    }
+    var s = E.staffingAdjust(d);
+    var c = s.check, i = s.impact;
+    var kpis = kpi('班组在岗率（前→后）', c.statusBefore+'% → '+c.statusAfter+'%', c.canOpen?'ok':'bad')+
+               kpi('是否可开班（≥60%）', c.canOpen?'可开班':'不可开班', c.canOpen?'ok':'bad')+
+               kpi('是否触发 AB 角顶班', c.needBackup?'是（>2 天）':'否', c.needBackup?'warn':'ok')+
+               kpi('日产能缺口', i.dailyGap+' 户', 'warn')+
+               kpi('合计缺口', i.totalGapInDays+' 户·日', 'bad');
+    var rules = s.rules.map(function(r){ return '<tr><td>'+r.id+'</td><td>'+esc(r.text)+'</td><td>'+esc(r.refs.join(', '))+'</td></tr>'; }).join('');
+    var acts = s.actions.map(function(a){ return '<tr><td>'+a.id+'</td><td>'+esc(a.owner)+'</td><td>'+esc(a.action)+'</td><td>'+esc(a.basis.join(', '))+'</td></tr>'; }).join('');
+    out.innerHTML = '<div class="kv" style="margin-top:12px">'+kpis+'</div>'+
+      '<h2 style="font-size:14px;margin:6px 0 8px">触发的规则</h2><table><tr><th>#</th><th>规则</th><th>依据</th></tr>'+rules+'</table>'+
+      '<h2 style="font-size:14px;margin:6px 0 8px">调整动作（含责任人）</h2><table><tr><th>#</th><th>责任人</th><th>动作</th><th>依据</th></tr>'+acts+'</table>'+
+      '<p class="note">'+esc(s.boundary.join(' '))+'</p>';
+  }
+
+  /* ---------- ⑤ 证据不足拦截 ---------- */
+  function viewT5(){
+    return '<div class="card"><h2>技能 ⑤ 证据不足拦截</h2>'+
+      '<p class="sub">检索分低于阈值（3.0）或数据不满足下限时，必须拒绝给结论，只输出待补证据与取证路径。</p>'+
+      '<div class="row"><input type="text" id="q" value="竞品在本市降价 30%，我们下周是否也要跟进降价？">'+
+      '<button id="go5">提交给 Agent</button><button class="ghost" id="p1">预设：竞品降价</button><button class="ghost" id="p2">预设：分区对比</button><button class="ghost" id="p3">预设：净增转负（可答）</button></div>'+
+      '<div id="out5"></div></div>';
+  }
+  function runT5(q){
+    var out = document.getElementById('out5');
+    if(!String(q||'').trim()){
+      out.innerHTML = '<div class="card fail" style="margin-top:12px"><h2>输入为空：无法检索</h2>'+
+        '<p class="sub">请输入一个经营问题再提交。</p></div>';
+      return;
+    }
+    var g = E.evidenceCheck(q);
+    var r = g.retrieval;
+    var hits = r.hits.length
+      ? r.hits.map(function(h){ return '<tr><td>'+esc(h.id)+'</td><td>'+esc(h.section)+'</td><td>'+h.score+'</td></tr>'; }).join('')
+      : '<tr><td colspan="3">无命中</td></tr>';
+    var head = g.decision === 'block'
+      ? '<div class="card fail" style="margin-top:12px"><h2>已拦截：证据不足，不输出结论</h2>'+
+        '<p class="sub">'+esc(g.block.reason)+'</p>'+
+        '<h2 style="font-size:14px;margin:10px 0 8px">待补证据</h2><pre>'+esc(g.block.missingEvidence.join('\n'))+'</pre>'+
+        '<p class="note">当前允许输出：'+esc(g.block.allowedOutput)+'</p></div>'
+      : '<div class="card" style="margin-top:12px"><h2 style="color:#34d399">允许输出条件性判断</h2>'+
+        '<p class="sub">'+esc(g.allow.reason)+'</p><p class="note">'+esc(g.allow.caveat)+'</p></div>';
+    out.innerHTML = '<div class="kv" style="margin-top:12px">'+
+        kpi('检索最高分', r.topScore, r.topScore>=g.threshold?'ok':'bad')+
+        kpi('阈值', g.threshold)+
+        kpi('判定', g.decision==='block'?'拦截':'放行', g.decision==='block'?'bad':'ok')+'</div>'+
+      '<h2 style="font-size:14px;margin:6px 0 8px">检索明细</h2><table><tr><th>知识源</th><th>章节</th><th>分</th></tr>'+hits+'</table>'+
+      head;
+  }
+
+  function render(){
+    if(!E) return;
+    renderTabs();
+    if(current==='t1') view.innerHTML = viewT1();
+    if(current==='t2') view.innerHTML = viewT2();
+    if(current==='t3'){ view.innerHTML = viewT3(); document.getElementById('go').onclick = function(){ runT3(document.getElementById('n').value); };
+      document.getElementById('s3').onclick = function(){ runT3(2); }; document.getElementById('s5').onclick = function(){ runT3(5); }; runT3(2); }
+    if(current==='t4'){ view.innerHTML = viewT4(); document.getElementById('go4').onclick = function(){ runT4(document.getElementById('d').value); };
+      document.getElementById('d1').onclick = function(){ runT4(1); }; document.getElementById('d5').onclick = function(){ runT4(5); }; runT4(3); }
+    if(current==='t5'){ view.innerHTML = viewT5();
+      document.getElementById('go5').onclick = function(){ runT5(document.getElementById('q').value); };
+      document.getElementById('p1').onclick = function(){ document.getElementById('q').value='竞品在本市降价 30%，我们下周是否也要跟进降价？'; runT5(document.getElementById('q').value); };
+      document.getElementById('p2').onclick = function(){ document.getElementById('q').value='中区融合用户流失是不是比东区严重？'; runT5(document.getElementById('q').value); };
+      document.getElementById('p3').onclick = function(){ document.getElementById('q').value='本周净增为什么转负？'; runT5(document.getElementById('q').value); };
+      runT5(document.getElementById('q').value); }
+  }
+
+  if(engineMissing()) return;
+  document.getElementById('m-id').textContent = E.AGENT.id;
+  document.getElementById('m-ver').textContent = E.AGENT.version;
+  document.getElementById('m-build').textContent = E.AGENT.build;
+  document.getElementById('m-model').textContent = E.AGENT.model;
+  render();
+})();
+</script>
+</body>
+</html>

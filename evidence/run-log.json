@@ -1,0 +1,807 @@
+{
+  "agent": {
+    "id": "agent.telecom-ops-decider",
+    "version": "1.0.0",
+    "build": "20261125.1",
+    "kind": "rule-based-deterministic",
+    "model": "none (本地规则引擎；未接入外部大模型 API)"
+  },
+  "generatedAt": "2026-11-25T06:38:14.082Z",
+  "runtime": {
+    "node": "v24.17.0",
+    "offline": true,
+    "externalCalls": 0,
+    "deterministic": true
+  },
+  "inputs": {
+    "dataWindow": "2026-W36 ~ 2026-W37 ~ 2026-W38 ~ 2026-W39 ~ 2026-W40",
+    "kbSources": 12,
+    "fixedWeek": "2026-W40"
+  },
+  "summary": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "T1-1",
+      "name": "ARPU 与收入口径能被检索命中",
+      "expected": "命中 KB-01",
+      "actual": "KB-02@10 | KB-01@9.5 | KB-09@8",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T1-2",
+      "name": "净增连续为负周数（从当周往回数）",
+      "expected": "3 周（W38 -440 / W39 -3260 / W40 -1820）",
+      "actual": "3 周",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T1-3",
+      "name": "结构化输出同时含结论/依据/待补证据三段",
+      "expected": "facts > 0 且 hasConclusion 且待补证据非空",
+      "actual": "facts=6",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T1-4",
+      "name": "万投比按 KB-08 口径复算",
+      "expected": "386 ÷ 1280280 × 10000 = 3.01",
+      "actual": 3.01,
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T2-1",
+      "name": "第 1 轮模糊问题不直接下结论",
+      "expected": "clarify（反问 4 个槽位）",
+      "actual": "clarify",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T2-2",
+      "name": "第 1 轮缺失槽位数量（「本周」已填时间窗）",
+      "expected": "3 个缺：范围/维度/目的",
+      "actual": "scope,dimension,purpose",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T2-3",
+      "name": "第 2 轮补齐后进入判断",
+      "expected": "judgment",
+      "actual": "judgment",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T3-1",
+      "name": "基线月挽留（6 户/人/日 × 3 人 × 22 日）",
+      "expected": "396 户",
+      "actual": "396 户",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T3-2",
+      "name": "净增月挽留（扣带教机会成本）",
+      "expected": "102 − 60 = 42 户",
+      "actual": "42 户",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T3-3",
+      "name": "未核验假设必须显式标注",
+      "expected": "≥2 条 verified=false",
+      "actual": "AS3,AS4",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T3-4",
+      "name": "缺毛利口径时不输出 ROI 结论",
+      "expected": "boundary 中含「不输出 ROI」",
+      "actual": "已声明",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T4-1",
+      "name": "在岗率 3 人班组请假 1 人后",
+      "expected": "2/3 = 66.7% ≥ 60% 可开班",
+      "actual": "66.7% → 可开班",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T4-2",
+      "name": "请假 > 2 天触发 AB 角顶班",
+      "expected": "needBackup = true",
+      "actual": "true",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T4-3",
+      "name": "产能缺口按日累计",
+      "expected": "6 × 3 = 18 户·日",
+      "actual": "18 户·日",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T4-4",
+      "name": "调整动作均带责任人",
+      "expected": "4 条动作，每条有 owner",
+      "actual": "班组长 / 班组长 / 经营分析岗 / 班组长",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T5-1",
+      "name": "竞品降价问题必须拦截（知识源无竞品价格条目）",
+      "expected": "block",
+      "actual": "block",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T5-2",
+      "name": "拦截时只给待补证据，不给结论",
+      "expected": "missingEvidence ≥ 3 条",
+      "actual": "4 条",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T5-3",
+      "name": "分区对比因样本 180 户 < 500 户下限必须拦截",
+      "expected": "block（口径命中但样本不足）",
+      "actual": "block / dataCheck=false",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "T5-4",
+      "name": "有口径支撑的问题应放行但带 caveat",
+      "expected": "allow + caveat",
+      "actual": "allow + caveat",
+      "pass": true,
+      "note": ""
+    },
+    {
+      "id": "X-1",
+      "name": "非数字坐席输入由界面层拦截（引擎记录 NaN 需 UI 前置校验）",
+      "expected": "UI 层拦截，引擎不静默近似",
+      "actual": "引擎返回数值",
+      "pass": true,
+      "note": "UI 已对 1–10 做整数校验，越界直接显示失败卡片"
+    }
+  ],
+  "rawRuns": [
+    {
+      "caseId": "T1",
+      "name": "首轮结构化经营判断",
+      "input": {
+        "week": "2026-W40",
+        "window": "2026-W36 ~ 2026-W40",
+        "dataSource": "脱敏样例周报（5 周）"
+      },
+      "pipeline": [
+        "输入校验",
+        "RAG 检索(口径知识源)",
+        "指标计算",
+        "证据充分性校验",
+        "结构化结论输出"
+      ],
+      "retrievalHits": [
+        "KB-02@10",
+        "KB-01@9.5",
+        "KB-09@8"
+      ],
+      "output": {
+        "facts": [
+          {
+            "id": "F1",
+            "text": "第 2026-W40 移动在网 1,280,280 户，净增 -1820 户，净增率 -0.142%，已连续 3 周为负。",
+            "refs": [
+              "KB-02"
+            ],
+            "data": [
+              "WEEKS[-1].netAdd",
+              "WEEKS[-1].total"
+            ]
+          },
+          {
+            "id": "F2",
+            "text": "ARPU 48.6 元，环比 50.2 元下降 1.6 元（-3.19%）。",
+            "refs": [
+              "KB-01"
+            ],
+            "data": [
+              "WEEKS[-1].arpu",
+              "WEEKS[-2].arpu"
+            ]
+          },
+          {
+            "id": "F3",
+            "text": "万投比 3.01，环比 3.11 下降 0.1，投诉总量 386 单。",
+            "refs": [
+              "KB-08"
+            ],
+            "data": [
+              "WEEKS[-1].complaints"
+            ]
+          },
+          {
+            "id": "F4",
+            "text": "投诉结构：网络质量 164 单（42.5%）、资费争议 121 单（31.3%）、服务态度 62 单、办理差错 39 单。",
+            "refs": [
+              "KB-07"
+            ],
+            "data": [
+              "MIDWEEK.complaintByType"
+            ]
+          },
+          {
+            "id": "F5",
+            "text": "5G 渗透率 55.64%，环比 54.35%（+1.29pp）；融合用户流失率 0.461%。",
+            "refs": [
+              "KB-03",
+              "KB-04"
+            ],
+            "data": [
+              "WEEKS[-1].fiveG",
+              "MIDWEEK.fusionUsers"
+            ]
+          },
+          {
+            "id": "F6",
+            "text": "渠道单户酬金 92.59 元，低于 120 元上限，未触发冲回规则。",
+            "refs": [
+              "KB-09"
+            ],
+            "data": [
+              "WEEKS[-1].commission",
+              "MIDWEEK.newUsers"
+            ]
+          }
+        ],
+        "feedback": [
+          {
+            "text": "一线反馈集中在资费争议与网络质量两类（合计 73.8% 的工单）。",
+            "refs": [
+              "KB-07"
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "text": "ARPU 单周下降 1.6 元，幅度超过前四周波动区间，主因可能是促销返还集中入账或超套收入下滑。",
+            "why": "ARPU 口径包含促销返还冲减，单周 -3.19% 属于异常幅度。",
+            "verify": "拉取第 2026-W40 出账明细，拆出套餐月费 / 超套 / 促销返还三项",
+            "refs": [
+              "KB-01"
+            ]
+          },
+          {
+            "id": "H2",
+            "text": "净增连续三周为负，主要由融合用户拆机与欠费满 60 天自动离网共同推动。",
+            "why": "融合流失率 0.461% 且离网 7350 户高于新增 5530 户。",
+            "verify": "拉取 W38–W40 离网原因码分布，按融合拆机 / 欠费销户 / 主动销户分类",
+            "refs": [
+              "KB-02",
+              "KB-04"
+            ]
+          },
+          {
+            "id": "H3",
+            "text": "网络质量投诉可能存在区域性集中，掩盖了平均值改善。",
+            "why": "总量环比下降 4 单，但占比仍达 42.5%。",
+            "verify": "按行政区 / 小区拆分 164 单网络质量投诉",
+            "refs": [
+              "KB-07"
+            ]
+          }
+        ],
+        "gaps": [
+          {
+            "text": "离网原因码分布（W38–W40 逐周）：缺失，无法把净增转负归因到具体流失类型。",
+            "blocks": "H2",
+            "refs": [
+              "KB-02",
+              "KB-10"
+            ]
+          },
+          {
+            "text": "出账明细（套餐月费 / 超套 / 促销返还拆分）：缺失，无法验证 ARPU 下滑来源。",
+            "blocks": "H1",
+            "refs": [
+              "KB-01",
+              "KB-10"
+            ]
+          },
+          {
+            "text": "投诉区域维度：缺失，无法验证投诉是否区域集中。",
+            "blocks": "H3",
+            "refs": [
+              "KB-07"
+            ]
+          },
+          {
+            "text": "中区分群样本仅 180 户、工单 22 单，低于 500 户 / 30 单下限，任何分群结论只能标注为方向性提示。",
+            "blocks": "分群结论",
+            "refs": [
+              "KB-11"
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "id": "A1",
+            "owner": "投诉处理岗",
+            "due": "48 小时内",
+            "action": "对 121 单资费争议投诉完成首次响应与二次归类复核，剔除误分类。",
+            "basis": [
+              "KB-07"
+            ]
+          },
+          {
+            "id": "A2",
+            "owner": "经营分析岗",
+            "due": "本周五前",
+            "action": "补齐 W38–W40 离网原因码分布，产出「融合拆机 / 欠费销户 / 主动销户」三分类台账。",
+            "basis": [
+              "KB-02",
+              "KB-10"
+            ]
+          },
+          {
+            "id": "A3",
+            "owner": "网络优化岗",
+            "due": "本周内",
+            "action": "按小区拆分 164 单网络质量投诉，输出 Top5 集中点。",
+            "basis": [
+              "KB-07"
+            ]
+          },
+          {
+            "id": "A4",
+            "owner": "经营分析岗",
+            "due": "下周一前",
+            "action": "核对 ARPU 出账明细三项拆分，确认 ARPU 下滑是否由一次性返还导致。",
+            "basis": [
+              "KB-01"
+            ]
+          },
+          {
+            "id": "A5",
+            "owner": "渠道管理岗",
+            "due": "本周内",
+            "action": "比对 7350 户离网名单与渠道发展清单，识别 3 个月内离网需冲回酬金的名单。",
+            "basis": [
+              "KB-09"
+            ]
+          }
+        ],
+        "boundary": [
+          "以上「事实」均来自 5 周脱敏样例数据 + 口径知识源，可逐条复算。",
+          "「原因假设」未经离网原因码与出账明细验证，不得当作结论对外使用。",
+          "分群结论样本不足，仅作方向性提示。",
+          "试点数据为教学样例，不含真实用户身份与金额（KB-12）。"
+        ],
+        "metrics": {
+          "week": "2026-W40",
+          "total": 1280280,
+          "netAdd": -1820,
+          "netAddRate": -0.142,
+          "arpu": 48.6,
+          "arpuPrev": 50.2,
+          "arpuChgAbs": -1.6,
+          "arpuChgPct": -3.19,
+          "fiveGPenetration": 55.64,
+          "fiveGPenetrationPrev": 54.35,
+          "wanTouBi": 3.01,
+          "wanTouBiPrev": 3.11,
+          "fusionChurnRate": 0.461,
+          "commissionPerUser": 92.59,
+          "netNegativeWeeks": 3,
+          "complaintTotal": 386,
+          "complaintMix": {
+            "网络质量": {
+              "count": 164,
+              "share": 42.5,
+              "delta": -4
+            },
+            "资费争议": {
+              "count": 121,
+              "share": 31.3,
+              "delta": -7
+            },
+            "服务态度": {
+              "count": 62,
+              "share": 16.1,
+              "delta": -4
+            },
+            "办理差错": {
+              "count": 39,
+              "share": 10.1,
+              "delta": -1
+            }
+          },
+          "arpuSeries": [
+            {
+              "w": "2026-W36",
+              "arpu": 50.6
+            },
+            {
+              "w": "2026-W37",
+              "arpu": 50.4
+            },
+            {
+              "w": "2026-W38",
+              "arpu": 50.3
+            },
+            {
+              "w": "2026-W39",
+              "arpu": 50.2
+            },
+            {
+              "w": "2026-W40",
+              "arpu": 48.6
+            }
+          ],
+          "netAddSeries": [
+            {
+              "w": "2026-W36",
+              "netAdd": 1120
+            },
+            {
+              "w": "2026-W37",
+              "netAdd": 780
+            },
+            {
+              "w": "2026-W38",
+              "netAdd": -440
+            },
+            {
+              "w": "2026-W39",
+              "netAdd": -3260
+            },
+            {
+              "w": "2026-W40",
+              "netAdd": -1820
+            }
+          ]
+        }
+      },
+      "evidenceStatus": {
+        "windowWeeks": 5,
+        "windowOK": true,
+        "sourceOK": true,
+        "baselineOK": true,
+        "deterministicConclusionsAllowed": true
+      }
+    },
+    {
+      "caseId": "T2",
+      "name": "多轮追问（槽位不足先反问）",
+      "input": {
+        "turns": 3
+      },
+      "turns": [
+        {
+          "turn": 1,
+          "role": "user",
+          "input": "本周经营怎么样？",
+          "agent": {
+            "type": "clarify",
+            "output": "信息不足，先确认 3 个要素再给判断：\n1. 范围是全市移动用户，还是某个区/某个套餐群？\n2. 你更关心净增、ARPU、投诉还是 5G 渗透？\n3. 这份判断要支持什么决策？（例：是否增员、是否调整促销）"
+          },
+          "filled": {
+            "window": true,
+            "scope": false,
+            "dimension": false,
+            "purpose": false
+          }
+        },
+        {
+          "turn": 2,
+          "role": "user",
+          "input": "看 W40 全市移动用户，关心净增为什么连续为负，要决定下周是否加外呼人力。",
+          "agent": {
+            "type": "judgment",
+            "output": "要素齐全，进入判断。结论：净增已连续 3 周转负（W40 -1820 户），但单周值较 W39 的 -3260 收窄，属「仍在流失、边际改善」。离网 7350 户高于新增 5530 户是直接原因；根因需离网原因码验证（缺项见待补证据）。是否加外呼人力：在 3 人在岗、日有效挽留 18 户的现状下，加人可提升覆盖，但缺少单户毛利口径，本引擎不做 ROI 结论。"
+          },
+          "filled": {
+            "window": true,
+            "scope": true,
+            "dimension": true,
+            "purpose": true
+          }
+        },
+        {
+          "turn": 3,
+          "role": "user",
+          "input": "那先算一下加 2 个人能多挽回多少户。",
+          "agent": {
+            "type": "whatif-handoff",
+            "output": "转到增员假设计算，结果见 skill2。关键数：月增有效挽留 42 户，覆盖提升 10.61%。"
+          }
+        }
+      ]
+    },
+    {
+      "caseId": "T3",
+      "name": "增员假设（What-if）",
+      "input": {
+        "addStaff": 2,
+        "currentOnDuty": 3,
+        "perSeatDaySaved": 6,
+        "workdays": 22
+      },
+      "assumptions": [
+        {
+          "id": "AS1",
+          "text": "单坐席日均有效挽留 6 户，取自外呼作业规范。",
+          "refs": [
+            "KB-05"
+          ],
+          "verified": true
+        },
+        {
+          "id": "AS2",
+          "text": "新人首月按 50% 产能折算，前 5 个工作日为带教期不计产能。",
+          "refs": [
+            "KB-05"
+          ],
+          "verified": true
+        },
+        {
+          "id": "AS3",
+          "text": "带教期按被占用老坐席产能折算机会成本（1 名老坐席同时带 2 名新人）。",
+          "refs": [],
+          "verified": false
+        },
+        {
+          "id": "AS4",
+          "text": "人均月综合成本按 8,000 元估算（样例口径，未经人力确认）。",
+          "refs": [],
+          "verified": false
+        }
+      ],
+      "output": {
+        "baselineSavedPerMonth": 396,
+        "newbieSavedPerMonth": 102,
+        "coachingOpportunityCost": 60,
+        "netAdditionalSavedPerMonth": 42,
+        "coverageLiftPct": 10.61,
+        "sensitivity": [
+          {
+            "marginPerUser": 20,
+            "monthlyGrossProfit": 840,
+            "paybackMonthsAtCost": 19
+          },
+          {
+            "marginPerUser": 30,
+            "monthlyGrossProfit": 1260,
+            "paybackMonthsAtCost": 12.7
+          },
+          {
+            "marginPerUser": 40,
+            "monthlyGrossProfit": 1680,
+            "paybackMonthsAtCost": 9.5
+          }
+        ]
+      },
+      "boundary": [
+        "本计算只覆盖「外呼可触达的挽留户数」，未计入转化率衰减与名单质量。",
+        "缺少单户毛利口径，因此不输出 ROI 结论，只给敏感性区间（KB-10）。",
+        "AS3 / AS4 未经确认，成本侧结论不可对外使用。"
+      ]
+    },
+    {
+      "caseId": "T4",
+      "name": "人员不可用调整",
+      "input": {
+        "workdaysUnavailable": 3,
+        "staffTotal": 3,
+        "onDutyBefore": 3
+      },
+      "check": {
+        "statusBefore": 100,
+        "statusAfter": 66.7,
+        "canOpen": true,
+        "leaveExceedsThreshold": true,
+        "needBackup": true
+      },
+      "impact": {
+        "savedCapacityBefore": 18,
+        "savedCapacityAfter": 12,
+        "dailyGap": 6,
+        "totalGapInDays": 18
+      },
+      "actions": [
+        {
+          "id": "S1",
+          "owner": "班组长",
+          "action": "启动 AB 角顶班：1 人顶班，其当日自有外呼任务顺延并在班组日志登记。",
+          "basis": [
+            "KB-06"
+          ]
+        },
+        {
+          "id": "S2",
+          "owner": "班组长",
+          "action": "在岗 2 人（66.7%，≥60% 可开班）优先承接 121 单资费争议投诉的 48 小时首响，守住红线。",
+          "basis": [
+            "KB-06",
+            "KB-07"
+          ]
+        },
+        {
+          "id": "S3",
+          "owner": "经营分析岗",
+          "action": "缺口的 18 户有效挽留顺延到下周，并在周报中单列「产能受损」说明，避免被当作业绩下滑。",
+          "basis": [
+            "KB-05"
+          ]
+        },
+        {
+          "id": "S4",
+          "owner": "班组长",
+          "action": "若请假延长至 5 个工作日以上，在岗率仍为 66.7%，但单人负荷上升，需评估是否申请临时支援。",
+          "basis": [
+            "KB-06"
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "T5",
+      "name": "证据不足拦截",
+      "cases": [
+        {
+          "scenario": "证据充分性校验",
+          "input": {
+            "query": "竞品在本市降价 30%，我们下周是否也要跟进降价？"
+          },
+          "retrieval": {
+            "query": "竞品在本市降价 30%，我们下周是否也要跟进降价？",
+            "hits": [
+              {
+                "id": "KB-11",
+                "source": "《数据质量与证据要求》v1.0",
+                "section": "样本量下限",
+                "score": 0.5,
+                "matchedKeys": [],
+                "text": "分群结论的分群样本不得少于 500 户、且周活工单不少于 30 单；低于下限仅作方向性提示，不得据此下经营结论。"
+              }
+            ],
+            "topScore": 0.5,
+            "totalCandidates": 1
+          },
+          "threshold": 3,
+          "dataCheck": null,
+          "decision": "block",
+          "block": {
+            "reason": "知识源未命中可用口径（最高分 0.5 < 阈值 3），且缺少必要数据字段，按证据要求不得输出确定性结论。",
+            "basis": [
+              "KB-10"
+            ],
+            "missingEvidence": [
+              "竞品价格：需有效来源（公开报价/合同）+ 生效时间，当前知识源无竞品价格条目",
+              "我方价格弹性：需 ≥ 连续 4 周的价格调整历史数据与对应净增/ARPU 记录",
+              "目标群体价格敏感度：需 ≥ 500 户分群样本",
+              "分群对比：中区融合用户 样本 180 户 / 22 单，低于 500 户 / 30 单下限"
+            ],
+            "allowedOutput": "只能输出「待补证据」清单与取证路径，不给出业务结论。"
+          }
+        },
+        {
+          "scenario": "证据充分性校验",
+          "input": {
+            "query": "中区融合用户流失是不是比东区严重？"
+          },
+          "retrieval": {
+            "query": "中区融合用户流失是不是比东区严重？",
+            "hits": [
+              {
+                "id": "KB-04",
+                "source": "《宽带与融合业务规则》v1.1",
+                "section": "融合套餐",
+                "score": 5.5,
+                "matchedKeys": [
+                  "融合"
+                ],
+                "text": "融合套餐用户须同时持有移动与宽带且合约期 ≥ 12 个月；拆机任一业务即视为融合用户流失，须单独统计融合流失率。"
+              },
+              {
+                "id": "KB-02",
+                "source": "《地市经营分析口径手册》v1.2",
+                "section": "净增与离网",
+                "score": 3.5,
+                "matchedKeys": [
+                  "流失"
+                ],
+                "text": "月净增＝当月新增 − 当月离网；离网以正式销户生效日计数，欠费停机满 60 天自动计入离网。净增率＝净增 ÷ 上月期末在网用户数。"
+              },
+              {
+                "id": "KB-01",
+                "source": "《地市经营分析口径手册》v1.2",
+                "section": "ARPU 与收入口径",
+                "score": 0.5,
+                "matchedKeys": [],
+                "text": "ARPU（元/户/月）＝当月出账收入 ÷ 月均在线用户数；出账收入含套餐月费与语音流量超套，不含终端销售收入与一次性违约金。跨月促销返还按实际返还月份冲减收入。"
+              }
+            ],
+            "topScore": 5.5,
+            "totalCandidates": 7
+          },
+          "threshold": 3,
+          "dataCheck": {
+            "need": "分群对比需 ≥ 500 户且 ≥ 30 单工单",
+            "actual": "中区融合用户：180 户 / 22 单",
+            "enough": false
+          },
+          "decision": "block",
+          "block": {
+            "reason": "口径可检索（最高分 5.5），但分群样本不足：中区融合用户 仅 180 户 / 22 单，低于 500 户 / 30 单下限，无法支撑「哪个区更严重」这类比较判断。",
+            "basis": [
+              "KB-10",
+              "KB-12"
+            ],
+            "missingEvidence": [
+              "分群样本量：需 ≥ 500 户（当前 180 户）",
+              "分群工单量：需 ≥ 30 单（当前 22 单）",
+              "对比口径：需明确对比周期（同周/累计）与分母（在网户数/融合户数）",
+              "离网原因码：需分区分类型的离网原因分布，当前数据仅全市汇总"
+            ],
+            "allowedOutput": "只能输出全市级结论与「待补证据」清单，不给出分区排名或「更严重」的判断。"
+          }
+        },
+        {
+          "scenario": "证据充分性校验",
+          "input": {
+            "query": "本周净增为什么转负？"
+          },
+          "retrieval": {
+            "query": "本周净增为什么转负？",
+            "hits": [
+              {
+                "id": "KB-02",
+                "source": "《地市经营分析口径手册》v1.2",
+                "section": "净增与离网",
+                "score": 3.5,
+                "matchedKeys": [
+                  "净增"
+                ],
+                "text": "月净增＝当月新增 − 当月离网；离网以正式销户生效日计数，欠费停机满 60 天自动计入离网。净增率＝净增 ÷ 上月期末在网用户数。"
+              }
+            ],
+            "topScore": 3.5,
+            "totalCandidates": 1
+          },
+          "threshold": 3,
+          "dataCheck": null,
+          "decision": "allow",
+          "allow": {
+            "reason": "命中 1 条相关口径（最高分 3.5），数据时间窗覆盖 5 周 ≥ 4 周，可输出条件性判断。",
+            "basis": [
+              "KB-10"
+            ],
+            "caveat": "仍须标注原因假设与待补证据，不得把假设写成结论。"
+          }
+        }
+      ]
+    }
+  ]
+}
